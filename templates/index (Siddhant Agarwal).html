@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESTOREx Explanation Annotation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS styles here */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .heading {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .image-section {
+            flex: 0 0 30%;
+            max-width: 30%;
+            margin-right: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-section img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .text-section {
+            flex: 0 0 65%;
+            max-width: 65%;
+        }
+        .text-section textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+            resize: none;
+            box-sizing: border-box;
+        }
+        .questions-section {
+            margin-top: 40px;
+        }
+        .question-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            background-color: #e9f5ff;
+        }
+        .question-group label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .textbox {
+            width: calc(100% - 20px);
+            height: 50px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        .large-textbox {
+            width: calc(100% - 20px);
+            height: 150px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .ranking-list li {
+            padding: 10px;
+            border: 1px dashed #007bff;
+            margin: 5px 0;
+            cursor: move;
+            background-color: #fff;
+        }
+        .radio-group {
+            display: flex; /* Use flexbox to align items in a row */
+            gap: 10px; /* Add some spacing between the buttons */
+            align-items: center; /* Align items vertically centered */
+        }
+        #next-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+        #next-button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(function() {
+            // Enable drag-and-drop ranking functionality
+            $(".ranking-list").sortable();
+            $(".ranking-list").disableSelection();
+        });
+    </script>
+</head>
+<body>
+    <div class="heading">RESTOREx Explanation Annotation</div>
+
+    <form action="/save_data" method="POST"> <!-- Added form here -->
+        <div class="container">
+            <!-- Image Section -->
+            <div class="image-section">
+                {% if image_filename %}
+                    <img src="{{ url_for('static', filename='images/' + image_filename) }}" alt="Annotation Image">
+                {% else %}
+                    <p>No image available</p>
+                {% endif %}
+            </div>
+
+            <!-- Text Section -->
+            <div class="text-section">
+                <textarea name="paragraph_1" placeholder="Enter paragraph 1">{{ paragraphs.exp1 }}</textarea>
+                <textarea name="paragraph_2" placeholder="Enter paragraph 2">{{ paragraphs.exp2 }}</textarea>
+                <textarea name="paragraph_3" placeholder="Enter paragraph 3">{{ paragraphs.exp3 }}</textarea>
+                <textarea name="paragraph_4" placeholder="Enter paragraph 4">{{ paragraphs.exp4 }}</textarea>
+                <input type="hidden" name="image_filename" value="{{ image_filename }}">
+            </div>
+        </div>
+
+        <!-- Questions Section -->
+        <div class="questions-section">
+            {% for i in range(4) %}
+                <!-- Repeat Q1 to Q20 -->
+                <div class="question-group">
+                    <label>Q{{ 1 + 5*i }}: [Explanation {{i+1}}] [Fluency] Is the explanation well formed and fluent in English, irrespective of its relevance to the meme context?</label>
+                    <div class="radio-group">
+                        <input type="radio" name="q{{ 1 + 5*i }}" value="1"> Strongly Disagree<br>
+                        <input type="radio" name="q{{ 1 + 5*i }}" value="2"> Disagree<br>
+                        <input type="radio" name="q{{ 1 + 5*i }}" value="3"> Neutral<br>
+                        <input type="radio" name="q{{ 1 + 5*i }}" value="4"> Agree<br>
+                        <input type="radio" name="q{{ 1 + 5*i }}" value="5"> Strongly Agree<br>
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>Q{{ 2 + 5*i }}: [Explanation {{i+1}}] [Relevance] Is the explanation relevant to the context of the meme?</label>
+                    <div class="radio-group">
+                        <input type="radio" name="q{{ 2 + 5*i }}" value="1"> Strongly Disagree<br>
+                        <input type="radio" name="q{{ 2 + 5*i }}" value="2"> Disagree<br>
+                        <input type="radio" name="q{{ 2 + 5*i }}" value="3"> Neutral<br>
+                        <input type="radio" name="q{{ 2 + 5*i }}" value="4"> Agree<br>
+                        <input type="radio" name="q{{ 2 + 5*i }}" value="5"> Strongly Agree<br>
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>Q{{ 3 + 5*i }}: [Explanation {{i+1}}] [Literal Meaning] Does the explanation provide a literal interpretation of the meme content?</label>
+                    <div class="radio-group">
+                        <input type="radio" name="q{{ 3 + 5*i }}" value="Yes"> Yes<br>
+                        <input type="radio" name="q{{ 3 + 5*i }}" value="No"> No<br>
+                        <input type="text" class="textbox" name="q{{ 3 + 5*i }}_text" placeholder="Your answer here">
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>Q{{ 4 + 5*i }}: [Explanation {{i+1}}] [Figurative Meaning] Does the explanation provide a figurative interpretation of the meme content?</label>
+                    <div class="radio-group">
+                        <input type="radio" name="q{{ 4 + 5*i }}" value="Yes"> Yes<br>
+                        <input type="radio" name="q{{ 4 + 5*i }}" value="No"> No<br>
+                        <input type="text" class="textbox" name="q{{ 4 + 5*i }}_text" placeholder="Your answer here">
+                    </div>
+                </div>
+                <div class="question-group">
+                    <label>Q{{ 5 + 5*i }}: [Explanation {{i+1}}] [Depressive Symptoms] List the depressive symptoms identifiable from the explanation.</label>
+                    <div class="radio-group">
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="1"> Lack of Interest<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="2"> Lack of Energy<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="3"> Feeling Down<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="4"> Eating Disorder<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="5"> Sleeping Disorder<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="6"> Lack of Self Esteem<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="7"> Concentration Problem<br>
+                        <input type="checkbox" name="q{{ 5 + 5*i }}_options" value="8"> Self-Harm<br>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- Ranking Questions -->
+            <div class="question-group">
+                <label>Q21: [Persuasiveness] Rank the explanations based on their persuasiveness.</label>
+                <ul id="ranking-q21" class="ranking-list">
+                    <li>Explanation 1</li>
+                    <li>Explanation 2</li>
+                    <li>Explanation 3</li>
+                    <li>Explanation 4</li>
+                </ul>
+                <input type="hidden" name="q21_ranking" id="q21_ranking" value="">
+            </div>
+
+            <div class="question-group">
+                <label>Q22: [Correctness] Rank the correctness of each explanation in identifying depressive symptoms.</label>
+                <ul id="ranking-q22" class="ranking-list">
+                    <li>Explanation 1</li>
+                    <li>Explanation 2</li>
+                    <li>Explanation 3</li>
+                    <li>Explanation 4</li>
+                </ul>
+                <input type="hidden" name="q22_ranking" id="q22_ranking" value="">
+            </div>
+
+            <div class="question-group">
+                <label>Q23: Provide your own explanation about the meme given the meme image.</label>
+                <textarea class="large-textbox" name="q23_feedback" placeholder="Your feedback here"></textarea>
+            </div>
+
+            <div class="question-group">
+                <label>Q24: Describe standout features or sentences from one or more of the explanations.</label>
+                <textarea class="large-textbox" name="q24_feedback" placeholder="Your feedback here"></textarea>
+            </div>
+
+            <button type="submit" id="next-button">NEXT</button>
+        </div>
+    </form>
+
+    <script>
+        // Capture ranking order on form submission
+        $("form").on("submit", function() {
+            var rankingQ21 = [];
+            $("#ranking-q21 li").each(function() {
+                rankingQ21.push($(this).text());
+            });
+            $("#q21_ranking").val(JSON.stringify(rankingQ21));
+
+            var rankingQ22 = [];
+            $("#ranking-q22 li").each(function() {
+                rankingQ22.push($(this).text());
+            });
+            $("#q22_ranking").val(JSON.stringify(rankingQ22));
+        });
+    </script>
+</body>
+</html>
